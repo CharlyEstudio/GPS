@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">GPS</string>
+    <string name="app_imei"></string>
 </resources>

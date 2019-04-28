@@ -13,6 +13,8 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.telephony.TelephonyManager;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
@@ -21,10 +23,17 @@ public class MainActivity extends AppCompatActivity {
     public Location mlocListener;
     public LocationManager mlocManager;
 
+    public TextView imei;
+    public String imeiVar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        imeiVar = obtenerIMEI();
+        imei = findViewById(R.id.imei);
+        imei.setText(imeiVar);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_CODE);
@@ -34,13 +43,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         // Estamos en el caso del télefono
+        String permission = permissions[0];
+        int result = grantResults[0];
         switch (requestCode) {
             case LOCATION_CODE:
                 mlocManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
                 mlocListener = new Location();
                 mlocListener.setMainActivity(this);
-                String permission = permissions[0];
-                int result = grantResults[0];
                 if (permission.equals(Manifest.permission.ACCESS_FINE_LOCATION)) {
                     // Comprobar si ah sido aceptado o denegado la petición del permiso
                     if (result == PackageManager.PERMISSION_GRANTED) {
@@ -52,13 +61,28 @@ public class MainActivity extends AppCompatActivity {
                         iniciarServicioBack();
                     } else {
                         // No concedio el permiso
-                        Toast.makeText(MainActivity.this, "No concedio el permiso.", Toast.LENGTH_LONG).show();
+                        Toast.makeText(MainActivity.this, "No concedio el permiso en UBICACIÓN.", Toast.LENGTH_LONG).show();
                     }
                 }
                 break;
             default:
                 super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
+    }
+
+    private String obtenerIMEI() {
+        final TelephonyManager telephonyManager = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            //Hacemos la validación de métodos, ya que el método getDeviceId() ya no se admite para android Oreo en adelante, debemos usar el método getImei()
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+                return "not 1";
+            }
+            return telephonyManager.getImei();
+        } else {
+            return telephonyManager.getDeviceId();
+        }
+
     }
 
     public void iniciarServicioBack() {

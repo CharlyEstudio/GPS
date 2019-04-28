@@ -1,9 +1,10 @@
 package mx.com.ferremayoristas.gps;
 
-import android.content.Context;
 import android.location.LocationListener;
+import android.os.Build;
 import android.os.Bundle;
-import android.widget.Toast;
+import android.support.annotation.RequiresApi;
+import android.widget.TextView;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -13,6 +14,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class Location implements LocationListener {
     MainActivity mainActivity;
+    String imeiData;
 
     public MainActivity getMainActivity() {
         return mainActivity;
@@ -20,9 +22,10 @@ public class Location implements LocationListener {
 
     public void setMainActivity(MainActivity mainActivity) {
         this.mainActivity = mainActivity;
+        this.imeiData = mainActivity.imeiVar;
     }
 
-
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onLocationChanged(android.location.Location location) {
         Retrofit retrofit = new Retrofit.Builder()
@@ -32,6 +35,7 @@ public class Location implements LocationListener {
 
         GpsService service = retrofit.create(GpsService.class);
 
+        // IMEI de prueba
         String numImei = "359270078018344";
 
         Ubicacion ubicacion = new Ubicacion();
@@ -42,21 +46,21 @@ public class Location implements LocationListener {
         ubicacion.setLng(location.getLongitude());
         ubicacion.setVelocidad(location.getSpeed());
 
-        Call<Ubicacion> updateUbicacionCall = service.postUbicacion(numImei, ubicacion);
+        if (imeiData != null) {
+            Call<Ubicacion> updateUbicacionCall = service.postUbicacion(imeiData, ubicacion);
+            updateUbicacionCall.enqueue(new Callback<Ubicacion>() {
+                @Override
+                public void onResponse(Call<Ubicacion> call, Response<Ubicacion> response) {
+                    Ubicacion ubicacion1 = response.body();
+                    System.out.println("IMEI: " + imeiData + " Lat: " + ubicacion1.getLat() + " - Lng: " + ubicacion1.getLng());
+                }
 
-        updateUbicacionCall.enqueue(new Callback<Ubicacion>() {
-            @Override
-            public void onResponse(Call<Ubicacion> call, Response<Ubicacion> response) {
-                Ubicacion ubicacion1 = response.body();
-                System.out.println("Lat: " + ubicacion1.getLat() + " - Lng: " + ubicacion1.getLng());
-            }
-
-            @Override
-            public void onFailure(Call<Ubicacion> call, Throwable t) {
-                // Toast.makeText(Location.this, "Error", Toast.LENGTH_LONG).show();
-                System.out.println("Error: " + t);
-            }
-        });
+                @Override
+                public void onFailure(Call<Ubicacion> call, Throwable t) {
+                    System.out.println("Error: " + t);
+                }
+            });
+        }
     }
 
     @Override
