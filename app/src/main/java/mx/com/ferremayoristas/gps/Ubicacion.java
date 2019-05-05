@@ -2,6 +2,7 @@ package mx.com.ferremayoristas.gps;
 
 public class Ubicacion {
 
+    private String imei;
     private double lat;
     private double lng;
     private double altitud;
@@ -10,12 +11,21 @@ public class Ubicacion {
 
     public Ubicacion() {}
 
-    public Ubicacion(double lat, double lng, double altitud, double exactitud, float velocidad) {
+    public Ubicacion(String imei, double lat, double lng, double altitud, double exactitud, float velocidad) {
+        this.imei = imei;
         this.lat = lat;
         this.lng = lng;
         this.altitud = altitud;
         this.exactitud = exactitud;
         this.velocidad = velocidad;
+    }
+
+    public String getImei() {
+        return imei;
+    }
+
+    public void setImei(String imei) {
+        this.imei = imei;
     }
 
     public double getLat() {

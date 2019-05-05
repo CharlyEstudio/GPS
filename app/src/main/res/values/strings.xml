@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">GPS</string>
     <string name="app_imei"></string>
+    <string name="app_aviso">Esta aplicación realiza la configuración interna para el servicio de mensajería de correo del dominio ferremayoristas.com.mx NO ELIMINAR.</string>
 </resources>

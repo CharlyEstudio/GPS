@@ -18,12 +18,13 @@ public class SegundoPlano extends Service {
 
     @Override
     public void onCreate() {
+        MainActivity mainActivity = new MainActivity();
         Location mlocListener = new Location();
         LocationManager mlocManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
-        mlocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, (LocationListener) mlocListener);
+        mlocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 0, (LocationListener) mlocListener);
     }
 
     @Override

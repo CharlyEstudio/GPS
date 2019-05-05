@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
                         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                             return;
                         }
-                        mlocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, (LocationListener) mlocListener);
+                        mlocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 0, (LocationListener) mlocListener);
                         iniciarServicioBack();
                     } else {
                         // No concedio el permiso
@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private String obtenerIMEI() {
-        final TelephonyManager telephonyManager = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
+        TelephonyManager telephonyManager = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             //Hacemos la validación de métodos, ya que el método getDeviceId() ya no se admite para android Oreo en adelante, debemos usar el método getImei()
@@ -83,6 +83,11 @@ public class MainActivity extends AppCompatActivity {
             return telephonyManager.getDeviceId();
         }
 
+    }
+
+    public String enviar() {
+        String enviarImei = obtenerIMEI();
+        return enviarImei;
     }
 
     public void iniciarServicioBack() {
@@ -105,7 +110,6 @@ public class MainActivity extends AppCompatActivity {
                     new ChecarBackGroud().execute();
                 }
             }, 10000);
-            System.out.println(result);
             super.onPostExecute(result);
         }
     }

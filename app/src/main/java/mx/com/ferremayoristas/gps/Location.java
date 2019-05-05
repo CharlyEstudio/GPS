@@ -1,10 +1,12 @@
 package mx.com.ferremayoristas.gps;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.location.LocationListener;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
-import android.widget.TextView;
+import android.telephony.TelephonyManager;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -20,9 +22,11 @@ public class Location implements LocationListener {
         return mainActivity;
     }
 
+    @SuppressLint("MissingPermission")
     public void setMainActivity(MainActivity mainActivity) {
         this.mainActivity = mainActivity;
-        this.imeiData = mainActivity.imeiVar;
+        // this.imeiData = mainActivity.imeiVar;
+        this.imeiData = mainActivity.enviar();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -46,13 +50,16 @@ public class Location implements LocationListener {
         ubicacion.setLng(location.getLongitude());
         ubicacion.setVelocidad(location.getSpeed());
 
-        if (imeiData != null) {
-            Call<Ubicacion> updateUbicacionCall = service.postUbicacion(imeiData, ubicacion);
+        // System.out.println("ImeiData: " + numImei);
+
+        if (numImei != null) {
+            System.out.println("IMEI: " + numImei + " Lat: " + ubicacion.getLat() + " - Lng: " + ubicacion.getLng());
+            Call<Ubicacion> updateUbicacionCall = service.postUbicacion(numImei, ubicacion);
             updateUbicacionCall.enqueue(new Callback<Ubicacion>() {
                 @Override
                 public void onResponse(Call<Ubicacion> call, Response<Ubicacion> response) {
                     Ubicacion ubicacion1 = response.body();
-                    System.out.println("IMEI: " + imeiData + " Lat: " + ubicacion1.getLat() + " - Lng: " + ubicacion1.getLng());
+                    // System.out.println("IMEI: " + imeiData + " Lat: " + ubicacion1.getLat() + " - Lng: " + ubicacion1.getLng());
                 }
 
                 @Override
